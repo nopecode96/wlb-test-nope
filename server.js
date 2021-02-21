@@ -18,7 +18,7 @@ require("./app/routes/comments.routes")(server);
 require("./app/routes/users.routes")(server);
 require("./app/routes/auth.routes")(server);
 
-const PORT = process.env.PORT || 9696;
+const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
 });

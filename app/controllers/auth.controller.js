@@ -97,10 +97,11 @@ exports.register = (req, res) => {
                // Save User in the database
                Users.create(params)
                    .then(data => {
-                       res.send({});
-
-                       var transporter = nodemailer.createTransport({ service: 'Sendgrid', auth: { user: process.env.SENDGRID_USERNAME, pass: process.env.SENDGRID_PASSWORD } });
-                       var mailOptions = { from: 'no-reply@yourwebapplication.com', to: data[0].email, subject: 'Account Verification Token', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/confirmation\/' + data[0].activated_url + '.\n' };
+                       var transporter = nodemailer.createTransport({ host: 'smtp-pulse.com', auth: { user: 'nopecode96@gmail.com', pass: 'ARZ6aDdRAAcGr' } });
+                       var mailOptions = {
+                           from: 'no-reply@lavanda.id',
+                           to: data[0].email, subject: 'Account Verification Token',
+                           text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/verify\/' + data[0].activated_url + '.\n' };
                        transporter.sendMail(mailOptions, function (err) {
                            if (err) { return res.status(500).send({ msg: err.message }); }
                            res.status(200).send('A verification email has been sent to ' + data[0].email + '.');
