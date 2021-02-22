@@ -7,7 +7,23 @@ exports.create = (req, res) => {
     // Validate request
     if (!req.body.title) {
         res.status(400).send({
+            message: "Title can not be empty!"
+        });
+        return;
+    }
+
+    // Validate request
+    if (!req.body.longtext) {
+        res.status(400).send({
             message: "Content can not be empty!"
+        });
+        return;
+    }
+
+    // Validate request
+    if (!req.body.fid_user) {
+        res.status(400).send({
+            message: "Your are not register!"
         });
         return;
     }
@@ -93,9 +109,26 @@ exports.update = (req, res) => {
 // Delete a Articles with the specified id in the request
 exports.delete = (req, res) => {
     const id = req.params.id;
+    const fid_user = req.params.fid_user;
+
+    if (!req.params.id) {
+        res.status(400).send({
+            message: "Article can't found!"
+        });
+        return;
+    }
+
+    // Validate request
+    if (!req.params.fid_user) {
+        res.status(400).send({
+            message: "Your ID can't found!"
+        });
+        return;
+    }
+
 
     Articles.destroy({
-        where: { id: id }
+        where: { id: id, fid_user: fid_user }
     })
         .then(num => {
             if (num == 1) {
@@ -111,23 +144,6 @@ exports.delete = (req, res) => {
         .catch(err => {
             res.status(500).send({
                 message: "Could not delete Article with id=" + id
-            });
-        });
-};
-
-// Delete all Articles from the database.
-exports.deleteAll = (req, res) => {
-    Articles.destroy({
-        where: {},
-        truncate: false
-    })
-        .then(nums => {
-            res.send({ message: `${nums} Articles were deleted successfully!` });
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                err.message || "Some error occurred while removing all Articles."
             });
         });
 };

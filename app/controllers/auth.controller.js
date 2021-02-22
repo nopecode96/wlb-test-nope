@@ -1,17 +1,14 @@
 const db = require("../models");
 const md5 = require("md5");
-const jwt = require('jsonwebtoken');
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
+const { generateJwt } = require('../helpers/jwt');
 const Users = db.users;
 const Op = db.Sequelize.Op;
 
 exports.login = (req, res) => {
     const email = req.body.email,
-        pass = req.body.password,
-        token = jwt.sign({ foo: 'bar' }, pass);
-
-
+        pass = req.body.password;
 
     if (!email) {
         res.status(400).send({
@@ -27,7 +24,29 @@ exports.login = (req, res) => {
         return;
     }
 
+    const condition = {email: email, password: md5(pass)};
 
+
+    Users.findAll({ where: condition })
+        .then(data => {
+            if(!data){
+                console.log('loading....2')
+                res.status(400).send({
+                    message: "Your email not found"
+                });
+            } else {
+                const token = generateJwt({id: data[0].id, email: data[0].email});
+                res.status(200).json({
+                    token: token
+                })
+            }
+        })
+        .catch( err => {
+            res.status(500).send({
+                message:
+                err.message || "Some error occurred while login."
+            });
+        });
 
 };
 
@@ -73,14 +92,14 @@ exports.register = (req, res) => {
     }
 
     const params = {
-        email           : req.body.email,
-        password        : md5(req.body.password),
-        full_name       : req.body.full_name,
+        email           : email,
+        password        : md5(pass),
+        full_name       : fullName,
         activated_url   : crypto.randomBytes(16).toString('hex'),
         activated       : req.body.activated ? req.body.activated: false
     };
 
-    var condition = { email: email };
+    const condition = { email: email };
 
     //Check Email exist
     Users.findAll({ where: condition })
@@ -92,25 +111,26 @@ exports.register = (req, res) => {
                        message: "Your email exist"
                    });
                }
-
            } else {
                // Save User in the database
                Users.create(params)
                    .then(data => {
-                       var transporter = nodemailer.createTransport({ host: 'smtp-pulse.com', auth: { user: 'nopecode96@gmail.com', pass: 'ARZ6aDdRAAcGr' } });
-                       var mailOptions = {
-                           from: 'no-reply@lavanda.id',
-                           to: data[0].email, subject: 'Account Verification Token',
-                           text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/verify\/' + data[0].activated_url + '.\n' };
+                       const transporter = nodemailer.createTransport({ host: 'smtp.zoho.com', auth: { user: 'noreply@lavanda.id', pass: 'Testemail2021' } });
+                       const mailOptions = {
+                           from: 'noreply@lavanda.id',
+                           to: data.email, subject: 'Account Verification Token',
+                           text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/api\/auth\/verification\/' + data.activated_url + '.\n' };
                        transporter.sendMail(mailOptions, function (err) {
                            if (err) { return res.status(500).send({ msg: err.message }); }
-                           res.status(200).send('A verification email has been sent to ' + data[0].email + '.');
+                           res.status(200).send({
+                               message: 'A verification email has been sent to ' + data.email + '.'
+                           });
                        });
                    })
                    .catch(err => {
                        res.status(500).send({
                            message:
-                           err.message || "Some error occurred while creating Article."
+                           err.message || "Some error occurred while creating User."
                        });
                    });
            }
@@ -118,11 +138,41 @@ exports.register = (req, res) => {
         .catch( err => {
             res.status(500).send({
                 message:
-                err.message || "Some error occurred while creating Article."
+                err.message || "Some error occurred while creating User."
             });
         });
 
+};
 
+exports.verification = (req, res) => {
+    const code = req.params.code;
+    const condition = { activated_url: code };
+
+    Users.findAll({where: condition})
+        .then(data => {
+            if(data.length == 0){
+                res.status(400).send({
+                    message: "Your Verification Code can't found"
+                });
+            } else if(data[0].activated_url !== code){
+                res.status(400).send({
+                    message: "Your Verification URL is not Valid"
+                });
+            } else {
+                Users.update({activated: true, activated_url: ''}, {where: condition})
+                    .then(num => {
+                        if (num == 1) {
+                            res.send({
+                                message: "Your account has been verified. You can login until right now"
+                            });
+                        } else {
+                            res.send({
+                                message: `Can't verify your account`
+                            });
+                        }
+                    })
+            }
+        })
 
 
 };

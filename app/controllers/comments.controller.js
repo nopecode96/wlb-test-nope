@@ -1,34 +1,79 @@
 const db = require("../models");
+const nodemailer = require("nodemailer");
+
 const Comments = db.comments;
+const Users = db.users;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Comments
 exports.create = (req, res) => {
+
+    const fid_article = req.body.fid_article,
+        fid_user = req.body.fid_user,
+        comment = req.body.comment;
+
     // Validate request
-    if (!req.body.title) {
+    if (!fid_article) {
         res.status(400).send({
-            message: "Content can not be empty!"
+            message: "Article can not found!"
+        });
+        return;
+    }
+
+    // Validate request
+    if (!fid_user) {
+        res.status(400).send({
+            message: "User can not found!"
+        });
+        return;
+    }
+
+    // Validate request
+    if (!comment) {
+        res.status(400).send({
+            message: "Content can not found!"
         });
         return;
     }
 
     // Create a Article
     const params = {
-        fid_article: req.body.fid_article,
-        fid_user: req.body.fid_user,
-        comment: req.body.comment,
-        published: req.body.published ? req.body.published : false
+        fid_article: fid_article,
+        fid_user: fid_user,
+        comment: comment,
+        published: true
     };
 
     // Save Article in the database
     Comments.create(params)
         .then(data => {
-            res.send(data);
+            // res.send(data);
+            console.log(data.fid_user);
+            const fid_article_owner = data.fid_user;
+
+            Users.findByPk(fid_article_owner)
+                .then(data2 => {
+                    const email = data2.email;
+                    const transporter = nodemailer.createTransport({ host: 'smtp.zoho.com', auth: { user: 'noreply@lavanda.id', pass: 'Testemail2021' } });
+                    const mailOptions = {
+                        from: 'noreply@lavanda.id',
+                        to: email, subject: 'You got Comment',
+                        text: 'Hello,\n\n' + 'You got comment from someone on your article please check on this link : \nhttp:\/\/' + req.headers.host + '.\n' };
+                    transporter.sendMail(mailOptions, function (err) {
+                        if (err) { return res.status(500).send({ msg: err.message }); }
+                        res.status(200).send({
+                            message: 'A comment notification has been sent to ' + email + '.'
+                        });
+                    });
+                })
+
+
+
         })
         .catch(err => {
             res.status(500).send({
                 message:
-                err.message || "Some error occurred while creating Article."
+                err.message || "Some error occurred while creating Comment."
             });
         });
 };
@@ -65,83 +110,3 @@ exports.findOne = (req, res) => {
         });
 };
 
-// Update a Article by the id in the request
-exports.update = (req, res) => {
-    const id = req.params.id;
-
-    Comments.update(req.body, {
-        where: { id: id }
-    })
-        .then(num => {
-            if (num == 1) {
-                res.send({
-                    message: "Article was updated successfully."
-                });
-            } else {
-                res.send({
-                    message: `Cannot update Article with id=${id}. Maybe Article was not found or req.body is empty!`
-                });
-            }
-        })
-        .catch(err => {
-            res.status(500).send({
-                message: "Error updating Article with id=" + id
-            });
-        });
-};
-
-// Delete a Comments with the specified id in the request
-exports.delete = (req, res) => {
-    const id = req.params.id;
-
-    Comments.destroy({
-        where: { id: id }
-    })
-        .then(num => {
-            if (num == 1) {
-                res.send({
-                    message: "Article was deleted successfully!"
-                });
-            } else {
-                res.send({
-                    message: `Cannot delete Article with id=${id}. Maybe Article was not found!`
-                });
-            }
-        })
-        .catch(err => {
-            res.status(500).send({
-                message: "Could not delete Article with id=" + id
-            });
-        });
-};
-
-// Delete all Comments from the database.
-exports.deleteAll = (req, res) => {
-    Comments.destroy({
-        where: {},
-        truncate: false
-    })
-        .then(nums => {
-            res.send({ message: `${nums} Comments were deleted successfully!` });
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                err.message || "Some error occurred while removing all Comments."
-            });
-        });
-};
-
-// find all published Comments
-exports.findAllPublished = (req, res) => {
-    Comments.findAll({ where: { published: true } })
-        .then(data => {
-            res.send(data);
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                err.message || "Some error occurred while retrieving Comments."
-            });
-        });
-};
