@@ -1,8 +1,8 @@
 module.exports = {
-  HOST: "rosie.db.elephantsql.com",
-  USER: "fioacxyt",
-  PASSWORD: "Ab_4Wr4hzKoyOGP41-9rjlfoHa1bJoxD",
-  DB: "fioacxyt",
+  HOST: "ec2-3-222-127-167.compute-1.amazonaws.com",
+  USER: "lvfyzimiimtpma",
+  PASSWORD: "fa5783ce284f17fe5a38d7f27c7ced3b92a96322eabc9696def2b087f0b97fa7",
+  DB: "dbod0ep7ih8js1",
   dialect: "postgres",
   pool: {
     max: 5,
