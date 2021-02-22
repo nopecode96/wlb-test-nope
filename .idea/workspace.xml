@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="528572f3-7236-4116-ae2c-2f727f494e35" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/app/middlewares/auth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/articles.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/articles.controller.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/auth.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/auth.controller.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/comments.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/comments.controller.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/articles.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/articles.routes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/auth.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/auth.routes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/comments.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/comments.routes.js" afterDir="false" />
-    </list>
+    <list default="true" id="528572f3-7236-4116-ae2c-2f727f494e35" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -264,12 +255,12 @@
       <workItem from="1613746256646" duration="24954000" />
       <workItem from="1613920394453" duration="378000" />
       <workItem from="1613920939192" duration="3581000" />
-      <workItem from="1613924665306" duration="43031000" />
+      <workItem from="1613924665306" duration="43578000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="71944000" />
+    <option name="totallyTimeSpent" value="72491000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="2062" height="1126" extended-state="6" />
